@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	accountdto "internal-transfers/dto/accounts"
 	"internal-transfers/dto/transactions"
 	"internal-transfers/models"
 	"net/http"
@@ -92,5 +93,25 @@ func (tc *TransactionController) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, transaction)
+	c.JSON(http.StatusCreated, transactions.TransactionResponse{
+		ID:                   transaction.ID,
+		SourceAccountID:      transaction.SourceAccountID,
+		DestinationAccountID: transaction.DestinationAccountID,
+		Amount:               transaction.Amount.String(),
+		CreatedAt:            transaction.CreatedAt,
+		UpdatedAt:            transaction.UpdatedAt,
+		SourceAccount: accountdto.AccountResponse{
+			ID:        transaction.SourceAccount.ID,
+			AccountID: transaction.SourceAccount.AccountID,
+			Balance:   transaction.SourceAccount.Balance.String(),
+			UpdatedAt: transaction.SourceAccount.UpdatedAt,
+		},
+		DestinationAccount: accountdto.AccountResponse{
+			ID:        transaction.DestinationAccount.ID,
+			AccountID: transaction.DestinationAccount.AccountID,
+			Balance:   transaction.DestinationAccount.Balance.String(),
+			UpdatedAt: transaction.DestinationAccount.UpdatedAt,
+		},
+	})
+
 }
