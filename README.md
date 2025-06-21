@@ -1,4 +1,4 @@
-# Bank Transfers API
+# Money Transfers API
 
 A production-ready Golang REST API to handle internal account transfers, built with:
 
