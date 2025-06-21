@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: internal-transfers-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - airvolume:/go/pkg/mod
+    working_dir: /app
+    ports:
+      - "${APP_PORT:-8888}:8888"
+    command: air
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  db:
+    image: postgres:16
+    container_name: internal-transfers-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  migrate:
+    image: migrate/migrate:v4.17.0
+    volumes:
+      - ./migrations:/migrations
+    entrypoint: [ "migrate" ]
+    depends_on:
+      - db
+volumes:
+  pgdata:
+  airvolume:
