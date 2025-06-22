@@ -13,12 +13,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func setupTestDB(t *testing.T) *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	dsn := "host=localhost port=5433 user=postgres password=postgres dbname=testdb sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	assert.NoError(t, err)
 
 	err = db.AutoMigrate(&models.Account{}, &models.Transaction{})

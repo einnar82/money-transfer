@@ -3,22 +3,25 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"internal-transfers/controllers"
 	"internal-transfers/dto/accounts"
 	"internal-transfers/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func setupAccountTestDB(t *testing.T) *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	dsn := "host=localhost port=5433 user=postgres password=postgres dbname=testdb sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	assert.NoError(t, err)
 
 	err = db.AutoMigrate(&models.Account{}, &models.Transaction{})
@@ -46,8 +49,10 @@ func TestCreateAccount(t *testing.T) {
 	db := setupAccountTestDB(t)
 	router := setupAccountRouter(db)
 
+	accountID := fmt.Sprintf("ACC%d", time.Now().UnixNano())
+
 	payload := accounts.CreateAccountRequest{
-		AccountID:      "1000000001",
+		AccountID:      accountID,
 		InitialBalance: 10000,
 	}
 	body, _ := json.Marshal(payload)
@@ -64,7 +69,7 @@ func TestCreateAccount(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "1000000001", resp["account_id"])
+	assert.Equal(t, accountID, resp["account_id"])
 	assert.Equal(t, "10000", resp["balance"])
 }
 
@@ -72,14 +77,15 @@ func TestShowAccount(t *testing.T) {
 	db := setupAccountTestDB(t)
 	router := setupAccountRouter(db)
 
+	accountID := fmt.Sprintf("ACC%d", time.Now().UnixNano())
 	// Seed account without transactions
 	account := models.Account{
-		AccountID: "1000000001",
+		AccountID: accountID,
 		Balance:   decimal.NewFromInt(10000),
 	}
 	assert.NoError(t, db.Create(&account).Error)
 
-	req := httptest.NewRequest(http.MethodGet, "/api/accounts/1000000001", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/accounts/"+accountID, nil)
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, req)
@@ -90,7 +96,7 @@ func TestShowAccount(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "1000000001", resp["account_id"])
+	assert.Equal(t, accountID, resp["account_id"])
 	assert.Equal(t, "10000", resp["balance"])
 
 	// Optional: check transactions are omitted

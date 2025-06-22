@@ -17,6 +17,8 @@ services:
       - db
     env_file:
       - .env
+    networks:
+      - appnet
 
   db:
     image: postgres:16
@@ -30,6 +32,23 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  test_db:
+    image: postgres:16
+    container_name: internal-transfers-test-db
+    restart: always
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - testpgdata:/var/lib/postgresql/data
+    networks:
+      - testnet
 
   migrate:
     image: migrate/migrate:v4.17.0
@@ -38,16 +57,27 @@ services:
     entrypoint: [ "migrate" ]
     depends_on:
       - db
+    networks:
+      - appnet
+      - testnet
 
   swagger:
     image: swaggerapi/swagger-ui
     container_name: internal-transfers-swagger
     ports:
-      - "8080:8080" # Swagger UI served at localhost:8080
+      - "8080:8080"
     volumes:
       - ./docs:/foo
     environment:
       SWAGGER_JSON: /foo/swagger.yaml
+    networks:
+      - appnet
+
 volumes:
   pgdata:
+  testpgdata:
   airvolume:
+
+networks:
+  appnet:
+  testnet:

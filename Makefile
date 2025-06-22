@@ -20,3 +20,25 @@ migrate-status:
 migrations:
 	@read -p "Migration name: " name; \
 	docker run --rm -v $$PWD/migrations:/migrations migrate/migrate create -ext sql -dir /migrations -seq $$name
+
+run-functional-tests:
+	@echo "🧹 Cleaning up..."
+	docker compose down -v
+	@echo "🚀 Starting test_db..."
+	docker compose up -d test_db
+	@sleep 3
+
+	@echo "🧨 Dropping existing schema..."
+	docker compose run --rm migrate \
+	  -path=/migrations \
+	  -database "postgres://postgres:postgres@test_db:5432/testdb?sslmode=disable" \
+	  drop -f
+
+	@echo "🛠  Running migrations..."
+	docker compose run --rm migrate \
+	  -path=/migrations \
+	  -database "postgres://postgres:postgres@test_db:5432/testdb?sslmode=disable" \
+	  up
+
+	@echo "✅ Running tests..."
+	go test ./tests -v
