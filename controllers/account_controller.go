@@ -31,11 +31,7 @@ func (ac *AccountController) Create(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusCreated, accounts.AccountResponse{
-		ID:        account.ID,
-		AccountID: account.AccountID,
-		Balance:   account.Balance.String(),
-	})
+	context.JSON(http.StatusCreated, account)
 }
 
 func (ac *AccountController) Show(c *gin.Context) {
