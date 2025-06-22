@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: Internal Transfers API
+  version: 1.0.0
+serv ers:
+  - url: http://localhost:8888
+paths:
+  /api/accounts:
+    post:
+      summary: Create an account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+  /api/accounts/{account_id}:
+    get:
+      summary: Show an account
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+  /api/transactions:
+    post:
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+components:
+  schemas:
+    AccountCreateRequest:
+      type: object
+      properties:
+        initial_balance:
+          type: number
+          format: float
+        account_id:
+          type: string
+      required:
+        - initial_balance
+        - account_id
+
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        account_id:
+          type: string
+        balance:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        outgoing_transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionReference'
+        incoming_transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionReference'
+      required:
+        - id
+        - account_id
+        - balance
+        - created_at
+        - updated_at
+        - outgoing_transactions
+        - incoming_transactions
+
+    TransactionReference:
+      type: object
+      properties:
+        id:
+          type: integer
+        source_account_id:
+          type: integer
+        destination_account_id:
+          type: integer
+        amount:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - source_account_id
+        - destination_account_id
+        - amount
+        - created_at
+        - updated_at
+
+    TransactionCreateRequest:
+      type: object
+      properties:
+        source_account_id:
+          type: string
+        destination_account_id:
+          type: string
+        amount:
+          type: string
+      required:
+        - source_account_id
+        - destination_account_id
+        - amount
+
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        source_account_id:
+          type: integer
+        destination_account_id:
+          type: integer
+        amount:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        source_account:
+          $ref: '#/components/schemas/AccountReference'
+        destination_account:
+          $ref: '#/components/schemas/AccountReference'
+      required:
+        - id
+        - source_account_id
+        - destination_account_id
+        - amount
+        - created_at
+        - updated_at
+        - source_account
+        - destination_account
+
+    AccountReference:
+      type: object
+      properties:
+        id:
+          type: integer
+        account_id:
+          type: string
+        balance:
+          type: string
+      required:
+        - id
+        - account_id
+        - balance

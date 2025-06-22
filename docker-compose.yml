@@ -38,6 +38,16 @@ services:
     entrypoint: [ "migrate" ]
     depends_on:
       - db
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: internal-transfers-swagger
+    ports:
+      - "8080:8080" # Swagger UI served at localhost:8080
+    volumes:
+      - ./docs:/foo
+    environment:
+      SWAGGER_JSON: /foo/swagger.yaml
 volumes:
   pgdata:
   airvolume:
