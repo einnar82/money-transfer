@@ -61,7 +61,7 @@ APP_PORT=8888
 
 ## Testing
 
-    To run the tests, in your terminal type `go test ./tests -v`
+To run the tests, in your terminal type `go test ./tests -v`
 
 ## Developer Experience
 
