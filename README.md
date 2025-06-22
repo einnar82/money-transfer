@@ -57,8 +57,11 @@ APP_PORT=8888
 
 **Run migrations:** `make migrate` 
 
-**Rollback last migration:**  `make migrate-rollback` 
+**Rollback last migration:**  `make migrate-rollback`
 
+## Testing
+
+    To run the tests, in your terminal type `go test ./tests -v`
 
 ## Developer Experience
 
