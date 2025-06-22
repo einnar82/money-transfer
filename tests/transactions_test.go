@@ -45,7 +45,6 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 func TestCreateTransaction(t *testing.T) {
 	db := setupTestDB(t)
 
-	// Create test accounts
 	account1 := models.Account{
 		AccountID: "1000000001",
 		Balance:   decimal.NewFromInt(10000),
@@ -78,12 +77,10 @@ func TestCreateTransaction(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 
-	// Basic assertions
 	assert.Equal(t, "100", resp["amount"])
 	assert.Equal(t, "1000000001", resp["source_account"].(map[string]interface{})["account_id"])
 	assert.Equal(t, "1000000002", resp["destination_account"].(map[string]interface{})["account_id"])
 
-	// Check updated balances
 	var updated1, updated2 models.Account
 	db.First(&updated1, account1.ID)
 	db.First(&updated2, account2.ID)

@@ -78,7 +78,7 @@ func TestShowAccount(t *testing.T) {
 	router := setupAccountRouter(db)
 
 	accountID := fmt.Sprintf("ACC%d", time.Now().UnixNano())
-	// Seed account without transactions
+
 	account := models.Account{
 		AccountID: accountID,
 		Balance:   decimal.NewFromInt(10000),
@@ -99,7 +99,6 @@ func TestShowAccount(t *testing.T) {
 	assert.Equal(t, accountID, resp["account_id"])
 	assert.Equal(t, "10000", resp["balance"])
 
-	// Optional: check transactions are omitted
 	assert.Nil(t, resp["outgoing_transactions"])
 	assert.Nil(t, resp["incoming_transactions"])
 }
