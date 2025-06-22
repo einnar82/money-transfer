@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	accountdto "internal-transfers/dto/accounts"
 	"internal-transfers/dto/transactions"
 	"internal-transfers/models"
 	"net/http"
@@ -83,7 +82,8 @@ func (tc *TransactionController) Create(c *gin.Context) {
 			return err
 		}
 
-		return tx.Preload("SourceAccount").
+		return tx.
+			Preload("SourceAccount").
 			Preload("DestinationAccount").
 			First(&transaction, transaction.ID).Error
 	})
@@ -100,23 +100,6 @@ func (tc *TransactionController) Create(c *gin.Context) {
 	case err != nil:
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction failed!"})
 	default:
-		c.JSON(http.StatusCreated, transactions.TransactionResponse{
-			ID:                   transaction.ID,
-			SourceAccountID:      transaction.SourceAccountID,
-			DestinationAccountID: transaction.DestinationAccountID,
-			Amount:               transaction.Amount.String(),
-			CreatedAt:            transaction.CreatedAt,
-			UpdatedAt:            transaction.UpdatedAt,
-			SourceAccount: accountdto.AccountResponse{
-				ID:        transaction.SourceAccount.ID,
-				AccountID: transaction.SourceAccount.AccountID,
-				Balance:   transaction.SourceAccount.Balance.String(),
-			},
-			DestinationAccount: accountdto.AccountResponse{
-				ID:        transaction.DestinationAccount.ID,
-				AccountID: transaction.DestinationAccount.AccountID,
-				Balance:   transaction.DestinationAccount.Balance.String(),
-			},
-		})
+		c.JSON(http.StatusCreated, transaction)
 	}
 }

@@ -67,7 +67,7 @@ components:
         - initial_balance
         - account_id
 
-    AccountResponse:
+    AccountResponse:   
       type: object
       properties:
         id:
@@ -76,28 +76,14 @@ components:
           type: string
         balance:
           type: string
-        created_at:
-          type: string
-          format: date-time
         updated_at:
           type: string
           format: date-time
-        outgoing_transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/TransactionReference'
-        incoming_transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/TransactionReference'
       required:
         - id
         - account_id
         - balance
-        - created_at
         - updated_at
-        - outgoing_transactions
-        - incoming_transactions
 
     TransactionReference:
       type: object
