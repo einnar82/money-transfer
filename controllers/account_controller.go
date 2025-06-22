@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"internal-transfers/dto/accounts"
 	"internal-transfers/models"
 	"net/http"
@@ -39,23 +38,23 @@ func (ac *AccountController) Create(context *gin.Context) {
 	})
 }
 
-func (ac *AccountController) Show(context *gin.Context) {
-	accountID := context.Param("account_id")
-	fmt.Println("Account ID:", accountID)
+func (ac *AccountController) Show(c *gin.Context) {
+	accountID := c.Param("account_id")
 
 	var account models.Account
+
 	if err := ac.DB.
 		Where("account_id = ?", accountID).
-		Preload("OutgoingTransactions").
-		Preload("IncomingTransactions").
+		Preload("OutgoingTransactions", func(tx *gorm.DB) *gorm.DB {
+			return tx.Joins("SourceAccount").Order("created_at desc")
+		}).
+		Preload("IncomingTransactions", func(tx *gorm.DB) *gorm.DB {
+			return tx.Joins("DestinationAccount").Order("created_at desc")
+		}).
 		First(&account).Error; err != nil {
-		context.JSON(http.StatusNotFound, gin.H{"error": "Account not found!"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Account not found!"})
 		return
 	}
 
-	context.JSON(http.StatusCreated, accounts.AccountResponse{
-		ID:        account.ID,
-		AccountID: account.AccountID,
-		Balance:   account.Balance.String(),
-	})
+	c.JSON(http.StatusOK, account)
 }
