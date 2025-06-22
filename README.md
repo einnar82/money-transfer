@@ -33,6 +33,7 @@ A production-ready Golang REST API to handle internal account transfers, built w
 docker compose up --build
 ```
 -   App will run at: [http://localhost:8888](http://localhost:8888)
+-   Swagger UI will run at: [http://localhost:8080](http://localhost:8080)
 -   DB will run on: `localhost:5432` (PostgreSQL 16)
 
 ## Environment Variables
