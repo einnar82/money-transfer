@@ -13,6 +13,6 @@ type Account struct {
 	CreatedAt time.Time       `gorm:"column:created_at;not null" json:"-"`
 	UpdatedAt time.Time       `gorm:"column:updated_at;not null" json:"updated_at"`
 
-	OutgoingTransactions []Transaction `gorm:"foreignKey:SourceAccountID" json:"-"`
-	IncomingTransactions []Transaction `gorm:"foreignKey:DestinationAccountID" json:"-"`
+	OutgoingTransactions []Transaction `gorm:"foreignKey:SourceAccountID" json:"outgoing_transactions,omitempty"`
+	IncomingTransactions []Transaction `gorm:"foreignKey:DestinationAccountID" json:"incoming_transactions,omitempty"`
 }

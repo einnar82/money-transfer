@@ -41,12 +41,6 @@ func (ac *AccountController) Show(c *gin.Context) {
 
 	if err := ac.DB.
 		Where("account_id = ?", accountID).
-		Preload("OutgoingTransactions", func(tx *gorm.DB) *gorm.DB {
-			return tx.Joins("SourceAccount").Order("created_at desc")
-		}).
-		Preload("IncomingTransactions", func(tx *gorm.DB) *gorm.DB {
-			return tx.Joins("DestinationAccount").Order("created_at desc")
-		}).
 		First(&account).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Account not found!"})
 		return
